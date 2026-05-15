@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/format";
 
+import { MemoryReadersSection } from "@/components/memory-readers-section";
 import { RoleBadge } from "@/components/role-badge";
 
 type Props = {
@@ -29,6 +30,47 @@ export default async function AgentMemoriesPage({ params }: Props) {
     .eq("agent_id", params.agentId)
     .order("created_at", { ascending: false })
     .limit(100);
+
+  const { data: grantRows } = await supabase
+    .from("memory_access")
+    .select("granted_agent_id")
+    .eq("source_agent_id", params.agentId);
+
+  const grantedIds =
+    grantRows?.map((r) => r.granted_agent_id).filter(Boolean) ?? [];
+
+  let grantAgents: {
+    id: string;
+    display_name: string;
+    api_key_prefix: string | null;
+  }[] = [];
+
+  if (grantedIds.length > 0) {
+    const { data } = await supabase
+      .from("agents")
+      .select("id, display_name, api_key_prefix")
+      .in("id", grantedIds);
+    grantAgents = data ?? [];
+  }
+
+  const grantMap = Object.fromEntries(
+    grantAgents.map((a) => [a.id, a] as const),
+  );
+
+  const grants = grantedIds.map((id) => {
+    const meta = grantMap[id];
+    return {
+      granted_agent_id: id,
+      display_name: meta?.display_name ?? "Unknown agent",
+      api_key_prefix: meta?.api_key_prefix ?? null,
+    };
+  });
+
+  const { data: peers } = await supabase
+    .from("agents")
+    .select("id, display_name, api_key_prefix")
+    .neq("id", params.agentId)
+    .order("display_name");
 
   return (
     <div className="flex flex-1 flex-col overflow-auto">
@@ -86,6 +128,12 @@ export default async function AgentMemoriesPage({ params }: Props) {
             ))}
           </ul>
         )}
+
+        <MemoryReadersSection
+          sourceAgentId={params.agentId}
+          grants={grants}
+          peerOptions={peers ?? []}
+        />
       </div>
     </div>
   );

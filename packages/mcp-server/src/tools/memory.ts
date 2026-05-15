@@ -11,8 +11,8 @@ const readInputSchema = z.object({
     .uuid()
     .optional()
     .describe(
-      "Whose memories to read. Omit to read this MCP agent’s own memories. " +
-        "To read another agent’s memories, a memory_access grant must exist.",
+        "Whose memories to read. Omit to read this MCP agent’s own memories. " +
+        "To read another agent’s memories under the same account, that agent’s owner must grant this agent via dashboard → Memory readers.",
     ),
   session_id: z
     .string()
@@ -59,7 +59,7 @@ export function registerMemoryTools(
     {
       title: "Read memory",
       description:
-        "Fetch memory rows for an agent you may access (yourself, or another agent if granted). " +
+        "Fetch memory rows for an agent you may access (yourself, or another agent if the owner granted you in the web dashboard / memory_access). " +
         "Newest first.",
       inputSchema: readInputSchema,
       annotations: {
@@ -95,7 +95,7 @@ export function registerMemoryTools(
                 {
                   type: "text",
                   text:
-                    "Not allowed to read this agent’s memories (no grant in memory_access).",
+                    "Not allowed to read this agent’s memories (grant missing or not same account).",
                 },
               ],
               isError: true,
