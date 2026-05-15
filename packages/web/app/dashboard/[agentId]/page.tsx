@@ -85,7 +85,16 @@ export default async function AgentMemoriesPage({ params }: Props) {
           {agent.display_name}
         </h1>
         <p className="mt-1 font-mono text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="font-sans font-medium text-zinc-600 dark:text-zinc-300">
+            Prefix
+          </span>{" "}
           {agent.api_key_prefix ?? "—"}
+        </p>
+        <p className="mt-2 select-text break-all font-mono text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+          <span className="font-sans font-medium text-zinc-600 dark:text-zinc-400">
+            Agent ID
+          </span>{" "}
+          {agent.id}
         </p>
       </div>
 

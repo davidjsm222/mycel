@@ -134,8 +134,19 @@ export function AgentCard({
         )}
       </div>
 
-      <div className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-400">
-        {apiKeyPrefix ?? "—"}
+      <div className="mt-2 space-y-1 text-xs">
+        <p className="text-zinc-500 dark:text-zinc-400">
+          <span className="font-sans font-medium text-zinc-600 dark:text-zinc-300">
+            Prefix
+          </span>{" "}
+          <span className="font-mono">{apiKeyPrefix ?? "—"}</span>
+        </p>
+        <p className="select-text break-all font-mono text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-500">
+          <span className="font-sans font-medium text-zinc-600 dark:text-zinc-400">
+            Agent ID
+          </span>{" "}
+          {id}
+        </p>
       </div>
       <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
         Added {createdAtFormatted}
