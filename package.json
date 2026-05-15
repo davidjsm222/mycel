@@ -6,11 +6,13 @@
     "packages/shared",
     "packages/cli",
     "packages/mcp-server",
-    "packages/api-server"
+    "packages/api-server",
+    "packages/web"
   ],
   "scripts": {
-    "build": "npm run build -w @mycel/shared && npm run build -w @mycel/cli && npm run build -w @mycel/mcp-server && npm run build -w @mycel/api-server",
+    "build": "npm run build -w @mycel/shared && npm run build -w @mycel/cli && npm run build -w @mycel/mcp-server && npm run build -w @mycel/api-server && npm run build -w @mycel/web",
     "doctor": "node ./packages/cli/dist/cli.js doctor",
+    "web": "npm run dev -w @mycel/web",
     "mcp": "node ./packages/mcp-server/dist/index.js",
     "api": "node ./packages/api-server/dist/index.js"
   }

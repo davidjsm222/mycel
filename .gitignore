@@ -1,11 +1,16 @@
 .env
 .env.*.local
+.env.local
 node_modules/
 dist/
 packages/*/dist/
 *.tsbuildinfo
 *.log
 .DS_Store
+
+# Next.js
+.next/
+out/
 
 # Supabase local
 .supabase/

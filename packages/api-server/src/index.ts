@@ -30,6 +30,20 @@ function parseBearerKey(
   return { prefix, secret };
 }
 
+function parseMemoriesLimit(
+  raw: string | undefined,
+  fallback: number,
+): { limit: number } | { error: string } {
+  if (raw === undefined || raw === "") {
+    return { limit: fallback };
+  }
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n < 1) {
+    return { error: "Invalid limit" };
+  }
+  return { limit: Math.min(200, Math.floor(n)) };
+}
+
 async function main(): Promise<void> {
   const port = Number(process.env.PORT ?? "3000");
   const supabase = createServiceRoleClient();
@@ -40,6 +54,52 @@ async function main(): Promise<void> {
 
   app.get("/health", async () => {
     return { status: "ok" };
+  });
+
+  app.get("/memories/public", async (request, reply) => {
+    const q = request.query as Record<string, string | undefined>;
+    const token = q.token?.trim();
+    if (!token) {
+      return reply.code(400).send({
+        error: "Missing token query param (?token=)",
+      });
+    }
+
+    const lim = parseMemoriesLimit(q.limit, 50);
+    if ("error" in lim) {
+      return reply.code(400).send({ error: lim.error });
+    }
+
+    const { data: tokenRow, error: tErr } = await supabase
+      .from("public_tokens")
+      .select("id, agent_id")
+      .eq("token", token)
+      .is("revoked_at", null)
+      .maybeSingle();
+
+    if (tErr) {
+      request.log.error(tErr, "public_tokens lookup");
+      return reply.code(500).send({ error: tErr.message });
+    }
+    if (!tokenRow) {
+      return reply.code(401).send({ error: "Invalid or revoked token" });
+    }
+
+    const { data: rows, error: mErr } = await supabase
+      .from("memories")
+      .select(
+        "id, agent_id, session_id, role, content, facets, source, created_at",
+      )
+      .eq("agent_id", tokenRow.agent_id)
+      .order("created_at", { ascending: false })
+      .limit(lim.limit);
+
+    if (mErr) {
+      request.log.error(mErr, "memories public query");
+      return reply.code(500).send({ error: mErr.message });
+    }
+
+    return rows ?? [];
   });
 
   app.get("/memories", async (request, reply) => {
@@ -94,11 +154,11 @@ async function main(): Promise<void> {
 
     let limit = 50;
     if (q.limit !== undefined && q.limit !== "") {
-      const n = Number(q.limit);
-      if (!Number.isFinite(n) || n < 1) {
-        return reply.code(400).send({ error: "Invalid limit" });
+      const parsed = parseMemoriesLimit(q.limit, 50);
+      if ("error" in parsed) {
+        return reply.code(400).send({ error: parsed.error });
       }
-      limit = Math.min(200, Math.floor(n));
+      limit = parsed.limit;
     }
 
     const { data: rows, error: mErr } = await supabase
