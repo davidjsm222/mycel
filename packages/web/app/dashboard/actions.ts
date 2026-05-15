@@ -107,3 +107,72 @@ export async function createAgentAction(): Promise<CreateAgentResult> {
       : "Could not create agent.",
   };
 }
+
+export async function updateAgentName(
+  agentId: string,
+  newName: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const trimmed = newName.trim();
+  if (!trimmed) {
+    return { ok: false, error: "Name cannot be empty." };
+  }
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.id) {
+    return { ok: false, error: "You must be signed in." };
+  }
+
+  const { data, error } = await supabase
+    .from("agents")
+    .update({ display_name: trimmed })
+    .eq("id", agentId)
+    .eq("owner_user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+  if (!data) {
+    return { ok: false, error: "Agent not found or access denied." };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/${agentId}`);
+  return { ok: true };
+}
+
+/** Deletes agent if owned by the current user; on success redirects to /dashboard. */
+export async function deleteAgent(
+  agentId: string,
+): Promise<{ ok: false; error: string } | undefined> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.id) {
+    redirect("/login");
+  }
+
+  const { data, error } = await supabase
+    .from("agents")
+    .delete()
+    .eq("id", agentId)
+    .eq("owner_user_id", user.id)
+    .select("id");
+
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+  if (!data?.length) {
+    return { ok: false, error: "Agent not found or access denied." };
+  }
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}

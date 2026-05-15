@@ -1,8 +1,7 @@
-import Link from "next/link";
-
 import { createClient } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/format";
 
+import { AgentCard } from "@/components/agent-card";
 import { NewAgentButton } from "@/components/new-agent-button";
 
 export default async function DashboardPage() {
@@ -11,9 +10,6 @@ export default async function DashboardPage() {
     .from("agents")
     .select("id, display_name, api_key_prefix, created_at")
     .order("created_at", { ascending: false });
-
-  const cardCls =
-    "block rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700";
 
   return (
     <div className="flex flex-1 flex-col overflow-auto">
@@ -42,17 +38,12 @@ export default async function DashboardPage() {
           <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {(agents ?? []).map((a) => (
               <li key={a.id}>
-                <Link href={`/dashboard/${a.id}`} className={cardCls}>
-                  <div className="font-medium text-zinc-900 dark:text-zinc-50">
-                    {a.display_name}
-                  </div>
-                  <div className="mt-2 font-mono text-xs text-zinc-500 dark:text-zinc-400">
-                    {a.api_key_prefix ?? "—"}
-                  </div>
-                  <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-500">
-                    Added {formatDateTime(a.created_at)}
-                  </div>
-                </Link>
+                <AgentCard
+                  id={a.id}
+                  displayName={a.display_name ?? ""}
+                  apiKeyPrefix={a.api_key_prefix}
+                  createdAtFormatted={formatDateTime(a.created_at)}
+                />
               </li>
             ))}
           </ul>
