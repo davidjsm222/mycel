@@ -1,0 +1,21 @@
+{
+  "name": "@mycel/mcp-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Supabase MCP bridge for Claude Code / Cursor (implement next)",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@mycel/shared": "*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}

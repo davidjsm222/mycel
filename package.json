@@ -1,0 +1,17 @@
+{
+  "name": "mycel",
+  "private": true,
+  "description": "Mycel: Supabase-backed memory + MCP + CLI scaffolding",
+  "workspaces": [
+    "packages/shared",
+    "packages/cli",
+    "packages/mcp-server",
+    "packages/api-server"
+  ],
+  "scripts": {
+    "build": "npm run build -w @mycel/shared && npm run build -w @mycel/cli && npm run build -w @mycel/mcp-server && npm run build -w @mycel/api-server",
+    "doctor": "node ./packages/cli/dist/cli.js doctor",
+    "mcp": "node ./packages/mcp-server/dist/index.js",
+    "api": "node ./packages/api-server/dist/index.js"
+  }
+}

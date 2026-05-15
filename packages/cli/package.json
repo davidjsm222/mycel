@@ -1,0 +1,21 @@
+{
+  "name": "@mycel/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "mycel — human-friendly CLI (implement next)",
+  "type": "module",
+  "bin": {
+    "mycel": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@mycel/shared": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}

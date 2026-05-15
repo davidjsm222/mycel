@@ -1,0 +1,21 @@
+{
+  "name": "@mycel/api-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Public HTTP API for Mycel",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.0.1",
+    "@mycel/shared": "*",
+    "fastify": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}
