@@ -10,13 +10,13 @@ import {
 } from "@/lib/auth-form-classes";
 import { MycelWordmark } from "@/components/mycel-wordmark";
 
-import { loginAction } from "./actions";
+import { signupAction } from "./actions";
 
 type Props = {
-  searchParams: { next?: string; error?: string };
+  searchParams: { next?: string; error?: string; notice?: string };
 };
 
-export default async function LoginPage({ searchParams }: Props) {
+export default async function SignupPage({ searchParams }: Props) {
   const supabase = createClient();
   const {
     data: { user },
@@ -33,7 +33,22 @@ export default async function LoginPage({ searchParams }: Props) {
           <MycelWordmark href="/signup" />
         </div>
 
-        <h1 className="sr-only">Sign in</h1>
+        <h1 className="text-center text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          Create account
+        </h1>
+        <p className="mb-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          Email and password. If your project requires email confirmation, we will
+          show a note after sign up.
+        </p>
+
+        {searchParams.notice ? (
+          <p
+            className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-100"
+            role="status"
+          >
+            {searchParams.notice}
+          </p>
+        ) : null}
 
         {searchParams.error ? (
           <p
@@ -44,7 +59,7 @@ export default async function LoginPage({ searchParams }: Props) {
           </p>
         ) : null}
 
-        <form action={loginAction} className="space-y-4">
+        <form action={signupAction} className="space-y-4">
           <input type="hidden" name="next" value={searchParams.next ?? ""} />
           <div>
             <label htmlFor="email" className={fieldLabel}>
@@ -68,21 +83,40 @@ export default async function LoginPage({ searchParams }: Props) {
               id="password"
               name="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
+              minLength={8}
+              className={inputClass}
+              placeholder="••••••••"
+            />
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              At least 8 characters.
+            </p>
+          </div>
+          <div>
+            <label htmlFor="confirmPassword" className={fieldLabel}>
+              Confirm password
+            </label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
               className={inputClass}
               placeholder="••••••••"
             />
           </div>
           <button type="submit" className={btnPrimary}>
-            Sign in
+            Create account
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
-          New here?{" "}
-          <Link href="/signup" className={authLink}>
-            Create an account
+          Already have an account?{" "}
+          <Link href="/login" className={authLink}>
+            Sign in
           </Link>
         </p>
       </div>
