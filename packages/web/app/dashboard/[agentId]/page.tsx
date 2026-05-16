@@ -99,9 +99,17 @@ export default async function AgentMemoriesPage({ params }: Props) {
       </div>
 
       <div className="flex-1 space-y-4 px-6 py-6 lg:px-8 lg:py-8">
-        <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
-          Memory log
-        </h2>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
+            Memory log
+          </h2>
+          <a
+            href={`/dashboard/${params.agentId}/export`}
+            className="shrink-0 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+          >
+            Export all (.md)
+          </a>
+        </div>
 
         {error ? (
           <p
